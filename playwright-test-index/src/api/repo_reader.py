@@ -55,3 +55,7 @@ class RepoReader:
             in self._file_access.read_file_from_repo(repo, path).lower()
             for path in paths
         )
+
+    # MARK: extract_tests_from_repo
+    def extract_tests_from_repo(self, repo: RepoRef):
+        pass
