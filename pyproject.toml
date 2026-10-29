@@ -19,4 +19,4 @@ build-backend = "uv_build"
 
 [tool.uv.build-backend]
 module-root = "playwright-test-index/src"
-module-name = ["api", "models"]
+module-name = ["api", "models", "repo"]

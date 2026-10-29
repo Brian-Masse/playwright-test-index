@@ -102,10 +102,13 @@ class RepoWriter:
     def _validate(
         repo: RepoRef, destination: Path, include_dirs: list[str] | None
     ) -> None:
+
         if not FULL_NAME_PATTERN.fullmatch(repo.full_name):
             raise ValueError(f"Invalid repository name: {repo.full_name!r}.")
+
         if not COMMIT_SHA_PATTERN.fullmatch(repo.commit_SHA):
             raise ValueError(f"Invalid commit SHA: {repo.commit_SHA!r}.")
+
         if not destination.is_dir() or any(destination.iterdir()):
             raise ValueError(
                 f"Destination must be an existing, empty directory: {destination}."
