@@ -11,6 +11,8 @@ PATH_SEPARATOR: str = "/"
 
 # MARK: RepoReader
 class RepoReader:
+    """Read Playwright tests from a given repo."""
+
     def __init__(self, file_access: RepoFileAccess) -> None:
         self._file_access: RepoFileAccess = file_access
 

@@ -162,7 +162,7 @@ class GitHubGateway:
 
         repository: Repository = self._lazy_client.get_repo(repo.full_name)
         content: bytes = repository.get_contents(
-            normalized_path, ref=repo.default_branch
+            normalized_path, ref=repo.commit_SHA
         ).decoded_content
 
         return content.decode("utf-8", errors="replace")
@@ -200,7 +200,7 @@ class GitHubGateway:
     def _fetch_tree(self, repo: RepoRef) -> RepoTree:
         repository: Repository = self._lazy_client.get_repo(repo.full_name)
         git_tree: GitTree = repository.get_git_tree(
-            sha=repo.default_branch, recursive=True
+            sha=repo.commit_SHA, recursive=True
         )
 
         if git_tree.truncated:
@@ -223,10 +223,15 @@ class GitHubGateway:
 
     @staticmethod
     def _to_repo_ref(repository: Repository) -> RepoRef:
+        latest_commit_sha: str = repository.get_branch(
+            repository.default_branch
+        ).commit.sha
+
         return RepoRef(
             full_name=repository.full_name,
+            commit_SHA=latest_commit_sha,
+            repo_size=repository.size,
             stars=repository.stargazers_count,
             language=repository.language,
-            default_branch=repository.default_branch,
             url=repository.html_url,
         )
