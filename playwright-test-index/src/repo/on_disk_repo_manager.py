@@ -49,6 +49,8 @@ class OnDiskRepoManager:
     def _get_dir(self, repo: RepoRef) -> Path:
         """Returns the checkout directory path for the repo's commit, whether or not it exists."""
 
+        if repo.commit_SHA is None:
+            raise ValueError(f"{repo.full_name} has no commit_SHA; resolve it first.")
         if not COMMIT_SHA_PATTERN.fullmatch(repo.commit_SHA):
             raise ValueError(f"Invalid commit SHA: {repo.commit_SHA!r}.")
 

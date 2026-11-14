@@ -106,6 +106,9 @@ class RepoWriter:
         if not FULL_NAME_PATTERN.fullmatch(repo.full_name):
             raise ValueError(f"Invalid repository name: {repo.full_name!r}.")
 
+        if repo.commit_SHA is None:
+            raise ValueError(f"{repo.full_name} has no commit_SHA; resolve it before cloning.")
+
         if not COMMIT_SHA_PATTERN.fullmatch(repo.commit_SHA):
             raise ValueError(f"Invalid commit SHA: {repo.commit_SHA!r}.")
 

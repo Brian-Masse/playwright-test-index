@@ -1,11 +1,13 @@
 import re
 import warnings
 from collections.abc import Iterator
+from dataclasses import replace
 from itertools import islice
 from types import TracebackType
 from typing import Protocol, Self
 
 from github import Auth, BadCredentialsException, Github, UnknownObjectException
+from github.Commit import Commit
 from github.GitTree import GitTree
 from github.Repository import Repository
 from models.language import Language
@@ -15,6 +17,12 @@ from models.repo_tree import RepoTree
 MAX_SEARCH_RESULTS: int = 1000
 BLOB_TYPE: str = "blob"
 TREE_TYPE: str = "tree"
+LATEST_COMMIT_REF: str = "HEAD"
+
+
+# what are the properties?
+# What is the prooperty language?
+# Possible to use git blame
 
 
 # MARK: GitHubAuthenticationError
@@ -152,6 +160,21 @@ class GitHubGateway:
 
         return self._to_repo_ref(repository)
 
+    # MARK: resolve_commit
+    def resolve_commit(self, repo: RepoRef) -> RepoRef:
+        """Returns a copy of `repo` pinned to the latest commit SHA on its default branch."""
+
+        commit: Commit = self._lazy_client.get_repo(repo.full_name).get_commit(
+            LATEST_COMMIT_REF
+        )
+
+        try:
+            commit.update()
+        except UnknownObjectException as error:
+            raise LookupError(f"{repo.full_name} not found on GitHub.") from error
+
+        return replace(repo, commit_SHA=commit.sha)
+
     # MARK: read_file_from_repo
     def read_file_from_repo(self, repo: RepoRef, path: str) -> str:
         """Returns the decoded text content of a file, raising FileNotFoundError if it is absent."""
@@ -162,7 +185,7 @@ class GitHubGateway:
 
         repository: Repository = self._lazy_client.get_repo(repo.full_name)
         content: bytes = repository.get_contents(
-            normalized_path, ref=repo.commit_SHA
+            normalized_path, ref=self._ref(repo)
         ).decoded_content
 
         return content.decode("utf-8", errors="replace")
@@ -199,9 +222,7 @@ class GitHubGateway:
 
     def _fetch_tree(self, repo: RepoRef) -> RepoTree:
         repository: Repository = self._lazy_client.get_repo(repo.full_name)
-        git_tree: GitTree = repository.get_git_tree(
-            sha=repo.commit_SHA, recursive=True
-        )
+        git_tree: GitTree = repository.get_git_tree(sha=self._ref(repo), recursive=True)
 
         if git_tree.truncated:
             warnings.warn(
@@ -218,18 +239,18 @@ class GitHubGateway:
         )
 
     @staticmethod
+    def _ref(repo: RepoRef) -> str:
+        return repo.commit_SHA or LATEST_COMMIT_REF
+
+    @staticmethod
     def _normalize_path(path: str) -> str:
         return path.strip("/")
 
     @staticmethod
     def _to_repo_ref(repository: Repository) -> RepoRef:
-        latest_commit_sha: str = repository.get_branch(
-            repository.default_branch
-        ).commit.sha
-
         return RepoRef(
             full_name=repository.full_name,
-            commit_SHA=latest_commit_sha,
+            commit_SHA=None,
             repo_size=repository.size,
             stars=repository.stargazers_count,
             language=repository.language,

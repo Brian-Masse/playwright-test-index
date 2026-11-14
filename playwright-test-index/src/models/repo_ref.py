@@ -7,7 +7,7 @@ class RepoRef:
     """Identifies a GitHub repository independently of PyGithub."""
 
     full_name: str
-    commit_SHA: str
+    commit_SHA: str | None
     repo_size: int
 
     stars: int

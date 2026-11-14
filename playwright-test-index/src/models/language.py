@@ -5,3 +5,4 @@ from enum import Enum
 class Language(Enum):
     python = "python"
     typescript = "typescript"
+    javascript = "javascript"

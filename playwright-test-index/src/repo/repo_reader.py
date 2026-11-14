@@ -1,7 +1,7 @@
 import posixpath
 import re
 
-from api.github_gateway import RepoFileAccess
+from ghapi.github_gateway import RepoFileAccess
 from models.repo_ref import RepoRef
 
 PLAYWRIGHT_KEYWORD: str = "playwright"
@@ -18,7 +18,9 @@ TS_TEST_FILE_PATTERN: str = r"\.(spec|test)\.[cm]?[jt]sx?$"
 PYTHON_TEST_FILE_PATTERN: str = r"^(test_.*|.*_test)\.py$"
 
 # Only plain string literals are read; computed values (e.g. path.join(...)) fall back to the config's directory.
-TEST_DIR_PATTERN: re.Pattern[str] = re.compile(r"""\btestDir\s*:\s*(['"`])([^'"`$]+)\1""")
+TEST_DIR_PATTERN: re.Pattern[str] = re.compile(
+    r"""\btestDir\s*:\s*(['"`])([^'"`$]+)\1"""
+)
 
 
 # MARK: RepoReader
@@ -61,7 +63,7 @@ class RepoReader:
     def repo_has_playwright(self, repo: RepoRef) -> bool:
         """Checks for playwright in READMEs or directories."""
 
-        return self.playwright_in_directory(repo) or self.playwright_in_README(repo)
+        return self.playwright_in_directory(repo)
 
     def _any_file_mentions_playwright(self, repo: RepoRef, paths: list[str]) -> bool:
         return any(
@@ -93,10 +95,13 @@ class RepoReader:
     def _resolve_test_roots(self, repo: RepoRef, config_path: str) -> list[str]:
         config_dir: str = posixpath.dirname(config_path)
         config_source: str = self._file_access.read_file_from_repo(repo, config_path)
-        test_dirs: list[str] = [match[1] for match in TEST_DIR_PATTERN.findall(config_source)]
+        test_dirs: list[str] = [
+            match[1] for match in TEST_DIR_PATTERN.findall(config_source)
+        ]
 
         test_roots: list[str] = [
-            posixpath.normpath(posixpath.join(config_dir, test_dir)) for test_dir in test_dirs
+            posixpath.normpath(posixpath.join(config_dir, test_dir))
+            for test_dir in test_dirs
         ]
         inside_repo_roots: list[str] = [
             root for root in test_roots if root.split(PATH_SEPARATOR)[0] != PARENT_DIR
