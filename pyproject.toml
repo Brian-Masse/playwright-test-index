@@ -17,4 +17,4 @@ build-backend = "uv_build"
 
 [tool.uv.build-backend]
 module-root = "playwright-test-index/src"
-module-name = ["ghapi", "models", "pipelines"]
+module-name = ["ghapi", "models", "pipelines", "dataset"]

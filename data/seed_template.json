@@ -1,0 +1,2188 @@
+{
+  "analyses": [
+    {
+      "repo": {
+        "full_name": "microsoft/playwright",
+        "commit_SHA": "f0eadb9783f97ea495cb8bd55860c5d5b99fe1c1",
+        "repo_size": 247211,
+        "stars": 99306,
+        "language": "TypeScript",
+        "url": "https://github.com/microsoft/playwright"
+      },
+      "repo_description": "Playwright is Microsoft's cross-browser end-to-end web testing and automation framework. This sample covers its own tests/page suite exercising check/uncheck, fill, selectOption, JS-handle serialization, and visibility queries against controlled HTML fixtures across Chromium, Firefox, and WebKit.",
+      "properties": [
+        {
+          "name": "addressing-equivalence",
+          "description": "Different ways of identifying the same target (by value, label, index, handle, attributes, or ARIA role) resolve to the same element and produce the same effect.",
+          "rating": 4,
+          "tag": "functional"
+        },
+        {
+          "name": "dry-run-purity",
+          "description": "An action that should not commit (a trial run, or a cancelled/discarded edit) performs its checks but makes no persistent state change.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "event-fidelity",
+          "description": "Performing the action dispatches the correct DOM events with the right type, bubbling, and composed flags, including across shadow-DOM boundaries.",
+          "rating": 2,
+          "tag": "functional"
+        },
+        {
+          "name": "idempotence",
+          "description": "Applying an operation to a target that already satisfies its goal state causes no further change; doing it twice equals doing it once.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "precondition-enforcement",
+          "description": "Invalid targets, wrong argument types, or unsatisfiable requests are rejected with an explicit error instead of silently succeeding.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "predicate-complementarity",
+          "description": "Two complementary state queries are logical negations of each other: for the same element exactly one is true.",
+          "rating": 2,
+          "tag": "API"
+        },
+        {
+          "name": "predicate-correctness",
+          "description": "A boolean state query such as isVisible/isHidden accurately reflects the element's real rendered state across edge cases.",
+          "rating": 2,
+          "tag": "functional"
+        },
+        {
+          "name": "retry-until-actionable",
+          "description": "The operation waits and retries while the target is not actionable (disabled, readonly, invisible, inert, or absent), has no effect during the wait, and completes once it becomes actionable.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "return-value-contract",
+          "description": "The operation's return value conforms to its specified shape, such as an array of the matched values or an empty array when nothing matched.",
+          "rating": 3,
+          "tag": null
+        },
+        {
+          "name": "round-trip-fidelity",
+          "description": "A value written or set through an action is observed unchanged through the paired read API, including normalized and empty/cleared values.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "selection-cardinality",
+          "description": "Single- versus multiple-selection semantics are honored: a non-multiple control keeps at most one value while a multiple control preserves the whole chosen set.",
+          "rating": 3,
+          "tag": "UI"
+        },
+        {
+          "name": "side-effect-tolerance",
+          "description": "The operation completes without throwing even when it triggers page side effects such as a navigation occurring mid-operation.",
+          "rating": 2,
+          "tag": null
+        },
+        {
+          "name": "structural-preservation-under-serialization",
+          "description": "Transferring a value across a serialization boundary preserves its structure and semantic type, including dates and self-referential (circular) objects.",
+          "rating": 3,
+          "tag": "API"
+        }
+      ],
+      "tests": [
+        {
+          "name": "CH-004 should not uncheck the unchecked box",
+          "description": "Unchecking an already-unchecked box leaves it unchecked, with no change.",
+          "language": "typescript",
+          "test_path": "tests/page/page-check.spec.ts",
+          "start_line": 38,
+          "end_line": 42,
+          "property_names": [
+            "idempotence"
+          ]
+        },
+        {
+          "name": "FI-020 should retry on disabled element",
+          "description": "Fill on a disabled input stays pending with no effect, then writes the value once enabled.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 246,
+          "end_line": 259,
+          "property_names": [
+            "retry-until-actionable",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "CH-011 should throw when not a checkbox 2",
+          "description": "Calling check on a role=button div rejects with 'Not a checkbox or radio button'.",
+          "language": "typescript",
+          "test_path": "tests/page/page-check.spec.ts",
+          "start_line": 103,
+          "end_line": 107,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "CH-012 should check the box inside a button",
+          "description": "Checking a checkbox nested in a button makes it checked, confirmed via element.checked, page.isChecked, and handle.isChecked.",
+          "language": "typescript",
+          "test_path": "tests/page/page-check.spec.ts",
+          "start_line": 109,
+          "end_line": 115,
+          "property_names": [
+            "predicate-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "CH-015 trial run should not uncheck",
+          "description": "A trial-run uncheck performs actionability checks but leaves the box checked.",
+          "language": "typescript",
+          "test_path": "tests/page/page-check.spec.ts",
+          "start_line": 135,
+          "end_line": 139,
+          "property_names": [
+            "dry-run-purity"
+          ]
+        },
+        {
+          "name": "FI-004 should fill different input types",
+          "description": "Filling several supported input types each stores the given value.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 45,
+          "end_line": 52,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "FI-005 should fill range input",
+          "description": "Filling a range input stores the given value.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 54,
+          "end_line": 65,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "FI-008 should fill date input after clicking",
+          "description": "Filling a date input after clicking stores the given date.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 82,
+          "end_line": 97,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "FI-009 input event.composed should be true and cross shadow dom boundary - ${type}",
+          "description": "Filling inputs fires an input event whose composed flag is true and which crosses the shadow-DOM boundary.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 98,
+          "end_line": 131,
+          "property_names": [
+            "event-fidelity"
+          ]
+        },
+        {
+          "name": "FI-011 should fill month input",
+          "description": "Filling a month input stores the given month.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 139,
+          "end_line": 143,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "FI-015 should fill contenteditable with new lines",
+          "description": "Filling a contenteditable element preserves new lines in the text.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 171,
+          "end_line": 178,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "FI-018 should throw nice error without injected script stack when element is not an <input>",
+          "description": "Filling a non-input element throws a clear error without leaking injected-script stack frames.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 231,
+          "end_line": 236,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "FI-030 should be able to clear using fill()",
+          "description": "Filling a value then filling an empty string clears the input.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 343,
+          "end_line": 349,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "FI-031 should not throw when fill causes navigation",
+          "description": "Fill does not throw when it triggers a navigation.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 351,
+          "end_line": 360,
+          "property_names": [
+            "side-effect-tolerance"
+          ]
+        },
+        {
+          "name": "FI-033 should fill contenteditable with focus handler that collapses selection",
+          "description": "Fill succeeds on a contenteditable whose focus handler collapses the selection.",
+          "language": "typescript",
+          "test_path": "tests/page/page-fill.spec.ts",
+          "start_line": 371,
+          "end_line": 391,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "SO-001 should select single option @smoke",
+          "description": "Selecting an option by its text stores that value and fires input/change.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 23,
+          "end_line": 28,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "SO-003 should fall back to selecting by label",
+          "description": "Selecting by a human label falls back correctly to the matching option value.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 37,
+          "end_line": 42,
+          "property_names": [
+            "addressing-equivalence",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "SO-004 should select single option by label",
+          "description": "Selecting an option by its label stores the matching value.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 44,
+          "end_line": 49,
+          "property_names": [
+            "addressing-equivalence",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "SO-006 should select single option by handle",
+          "description": "Selecting an option by element handle stores its value.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 58,
+          "end_line": 63,
+          "property_names": [
+            "addressing-equivalence",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "SO-009 should not select single option when some attributes do not match",
+          "description": "When attributes conflict so no option matches all, nothing is selected and the value stays empty.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 79,
+          "end_line": 88,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "SO-011 should not throw when select causes navigation",
+          "description": "selectOption does not throw when it triggers a navigation.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 97,
+          "end_line": 105,
+          "property_names": [
+            "side-effect-tolerance"
+          ]
+        },
+        {
+          "name": "SO-012 should select multiple options",
+          "description": "On a multiple select, selecting several values stores the whole set.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 107,
+          "end_line": 113,
+          "property_names": [
+            "round-trip-fidelity",
+            "selection-cardinality"
+          ]
+        },
+        {
+          "name": "SO-014 should respect event bubbling",
+          "description": "selectOption fires bubbling input and change events.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 123,
+          "end_line": 128,
+          "property_names": [
+            "event-fidelity"
+          ]
+        },
+        {
+          "name": "SO-017 should return an array of matched values",
+          "description": "selectOption returns the array of matched values.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 143,
+          "end_line": 148,
+          "property_names": [
+            "return-value-contract"
+          ]
+        },
+        {
+          "name": "SO-018 should return an array of one element when multiple is not set",
+          "description": "On a non-multiple select, selectOption returns an array of exactly one element.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 150,
+          "end_line": 154,
+          "property_names": [
+            "return-value-contract",
+            "selection-cardinality"
+          ]
+        },
+        {
+          "name": "SO-020 should not allow null items",
+          "description": "selectOption rejects a null item with 'expected object, got null'.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 162,
+          "end_line": 168,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "SO-023 should deselect all options when passed no values for a select without multiple",
+          "description": "On a non-multiple select, passing an empty array deselects all options.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 187,
+          "end_line": 192,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "SO-026 should wait for option to be present",
+          "description": "selectOption waits until a matching option is appended, then selects it.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 243,
+          "end_line": 258,
+          "property_names": [
+            "retry-until-actionable"
+          ]
+        },
+        {
+          "name": "SO-028 should wait for multiple options to be present",
+          "description": "On a multiple select, selectOption waits until all requested options are present, then selects them.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 278,
+          "end_line": 294,
+          "property_names": [
+            "retry-until-actionable"
+          ]
+        },
+        {
+          "name": "SO-031 should wait for option to be enabled",
+          "description": "selectOption errors while the option is disabled, then succeeds once it is enabled.",
+          "language": "typescript",
+          "test_path": "tests/page/page-select-option.spec.ts",
+          "start_line": 356,
+          "end_line": 384,
+          "property_names": [
+            "precondition-enforcement",
+            "retry-until-actionable"
+          ]
+        },
+        {
+          "name": "JH-007 should work @smoke",
+          "description": "An evaluated object handle round-trips through jsonValue() equal to the original object.",
+          "language": "typescript",
+          "test_path": "tests/page/jshandle-json-value.spec.ts",
+          "start_line": 20,
+          "end_line": 24,
+          "property_names": [
+            "structural-preservation-under-serialization"
+          ]
+        },
+        {
+          "name": "LO-115 isVisible and isHidden should work",
+          "description": "isVisible and isHidden report correctly for a visible div, an empty span, and a missing element.",
+          "language": "typescript",
+          "test_path": "tests/page/locator-is-visible.spec.ts",
+          "start_line": 20,
+          "end_line": 37,
+          "property_names": [
+            "predicate-complementarity",
+            "predicate-correctness"
+          ]
+        },
+        {
+          "name": "LO-117 isVisible should be true for element outside view",
+          "description": "An element positioned far off-screen is still reported visible.",
+          "language": "typescript",
+          "test_path": "tests/page/locator-is-visible.spec.ts",
+          "start_line": 44,
+          "end_line": 47,
+          "property_names": [
+            "predicate-correctness"
+          ]
+        },
+        {
+          "name": "LO-121 isVisible and isHidden should work with list box options",
+          "description": "Visible and hidden option and optgroup entries are reported correctly across select variants.",
+          "language": "typescript",
+          "test_path": "tests/page/locator-is-visible.spec.ts",
+          "start_line": 93,
+          "end_line": 110,
+          "property_names": [
+            "predicate-correctness"
+          ]
+        },
+        {
+          "name": "LO-124 isVisible during navigation should not throw",
+          "description": "isVisible returns false without throwing even while the page is navigating.",
+          "language": "typescript",
+          "test_path": "tests/page/locator-is-visible.spec.ts",
+          "start_line": 138,
+          "end_line": 149,
+          "property_names": [
+            "predicate-correctness",
+            "side-effect-tolerance"
+          ]
+        }
+      ]
+    },
+    {
+      "repo": {
+        "full_name": "nasa/openmct",
+        "commit_SHA": "e09bfaf47856b2b7ae2ea74334800b26fd27a41e",
+        "repo_size": 87427,
+        "stars": 13213,
+        "language": "JavaScript",
+        "url": "https://github.com/nasa/openmct"
+      },
+      "repo_description": "Open MCT is NASA Ames' browser-based mission-control framework for visualizing telemetry. This dataset covers its Playwright functional e2e suite (e2e/tests/functional), which drives the real application to verify object creation, editing, persistence, visualization plugins (plots, imagery, tables, notebooks), navigation, search, and time handling.",
+      "properties": [
+        {
+          "name": "addressing-equivalence",
+          "description": "Different ways of identifying the same target (by value, label, index, handle, attributes, or ARIA role) resolve to the same element and produce the same effect.",
+          "rating": 4,
+          "tag": "functional"
+        },
+        {
+          "name": "capability-adaptation",
+          "description": "The system detects whether a backend capability such as a search index is available and uses it when present, falling back to an alternative path when absent.",
+          "rating": 3,
+          "tag": "API"
+        },
+        {
+          "name": "debouncing",
+          "description": "Rapid successive inputs are coalesced, or in-flight work is aborted, so only a minimal number of downstream requests fire.",
+          "rating": 4,
+          "tag": "functional"
+        },
+        {
+          "name": "deletion-completeness",
+          "description": "Removing an object eliminates every trace of it; it no longer appears in views, trees, search, or composition.",
+          "rating": 4,
+          "tag": "functional"
+        },
+        {
+          "name": "derived-state-correctness",
+          "description": "A computed or derived output (such as a condition evaluation) equals the correct value for the given inputs, including the correct empty or unavailable result when inputs are missing.",
+          "rating": 3,
+          "tag": "functional"
+        },
+        {
+          "name": "display-correctness",
+          "description": "A rendered UI affordance displays text or values that accurately reflect the underlying object's real state, such as its canonical hierarchical path.",
+          "rating": 3,
+          "tag": "UI"
+        },
+        {
+          "name": "dry-run-purity",
+          "description": "An action that should not commit (a trial run, or a cancelled/discarded edit) performs its checks but makes no persistent state change.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "focus-on-creation",
+          "description": "A newly created item is automatically focused and selected so it is ready for immediate interaction.",
+          "rating": 1,
+          "tag": "UI"
+        },
+        {
+          "name": "hover-disclosure",
+          "description": "A transient overlay such as a tooltip is revealed while its trigger is hovered and removed once the pointer moves away.",
+          "rating": 1,
+          "tag": "UI"
+        },
+        {
+          "name": "idempotence",
+          "description": "Applying an operation to a target that already satisfies its goal state causes no further change; doing it twice equals doing it once.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "in-place-row-update",
+          "description": "An incoming record matching an existing row's identity key updates that row in place rather than appending a duplicate, keeping the row count stable.",
+          "rating": 2,
+          "tag": "API"
+        },
+        {
+          "name": "independence",
+          "description": "Operating on one element or object does not affect the state of sibling elements; adjacent items retain their own values.",
+          "rating": 4,
+          "tag": "functional"
+        },
+        {
+          "name": "injection-safety",
+          "description": "User-supplied, exported, or linked values that could be interpreted as executable content are neutralized (stripped, escaped, prefixed, or scheme/opener-restricted) so the dangerous form is never produced.",
+          "rating": 1,
+          "tag": "input"
+        },
+        {
+          "name": "input-clamping",
+          "description": "An out-of-range input is coerced to the nearest valid value rather than rejected, so the operation still completes with a complete value.",
+          "rating": 3,
+          "tag": "input"
+        },
+        {
+          "name": "layout-mode-fidelity",
+          "description": "A selected layout mode (such as single-line versus wrap, or collapsed versus expanded) produces the corresponding rendered layout.",
+          "rating": 2,
+          "tag": "UI"
+        },
+        {
+          "name": "navigation-correctness",
+          "description": "Activating a navigational affordance (link, breadcrumb, or menu entry) brings the application to the intended target, reflected in the URL or active view.",
+          "rating": 2,
+          "tag": "UI"
+        },
+        {
+          "name": "ordering-correctness",
+          "description": "Items are rendered in the order dictated by the active sort or priority rule, and re-sort correctly when the sort key changes.",
+          "rating": 2,
+          "tag": "UI"
+        },
+        {
+          "name": "override-precedence",
+          "description": "When multiple sources could set the same value, the higher-priority source takes effect and overrides the others.",
+          "rating": 1,
+          "tag": null
+        },
+        {
+          "name": "persistence-across-reload",
+          "description": "State created or edited in one session survives a page reload or renavigation and is read back unchanged.",
+          "rating": 4,
+          "tag": "functional"
+        },
+        {
+          "name": "precondition-enforcement",
+          "description": "Invalid targets, wrong argument types, or unsatisfiable requests are rejected with an explicit error instead of silently succeeding.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "predicate-complementarity",
+          "description": "Two complementary state queries are logical negations of each other: for the same element exactly one is true.",
+          "rating": 2,
+          "tag": "API"
+        },
+        {
+          "name": "predicate-correctness",
+          "description": "A boolean state query such as isVisible/isHidden accurately reflects the element's real rendered state across edge cases.",
+          "rating": 2,
+          "tag": "functional"
+        },
+        {
+          "name": "render-invariant",
+          "description": "The low-level rendered geometry upholds an expected invariant (monotonic ordering, no coordinate truncation, no stale-offset collapse) regardless of input quirks.",
+          "rating": 1,
+          "tag": "UI"
+        },
+        {
+          "name": "representation-consistency",
+          "description": "The same object renders the same value across different representations or view states, such as a collapsed versus an expanded legend.",
+          "rating": 3,
+          "tag": "UI"
+        },
+        {
+          "name": "request-minimality",
+          "description": "An interaction issues no redundant backend requests and coalesces multiple items' data needs into a single batched request where possible.",
+          "rating": 4,
+          "tag": "API"
+        },
+        {
+          "name": "responsive-relayout",
+          "description": "Rendered content repositions, rescales, or reprioritizes to stay correct and within the visible area when the viewport or container is resized.",
+          "rating": 2,
+          "tag": "UI"
+        },
+        {
+          "name": "return-value-contract",
+          "description": "The operation's return value conforms to its specified shape, such as an array of the matched values or an empty array when nothing matched.",
+          "rating": 3,
+          "tag": null
+        },
+        {
+          "name": "reversibility",
+          "description": "An operation has an inverse that restores the prior state, so forward-then-inverse returns the system to where it started.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "round-trip-fidelity",
+          "description": "A value written or set through an action is observed unchanged through the paired read API, including normalized and empty/cleared values.",
+          "rating": 5,
+          "tag": "functional"
+        },
+        {
+          "name": "safe-state-fallback",
+          "description": "When a configuration cannot be applied or is absent, the system falls back to a well-defined safe default state rather than failing or behaving unpredictably.",
+          "rating": 2,
+          "tag": "UI"
+        },
+        {
+          "name": "scroll-reachability",
+          "description": "Content that overflows its container can be scrolled until off-screen content is brought into the viewport.",
+          "rating": 2,
+          "tag": "UI"
+        },
+        {
+          "name": "selection-cardinality",
+          "description": "Single- versus multiple-selection semantics are honored: a non-multiple control keeps at most one value while a multiple control preserves the whole chosen set.",
+          "rating": 3,
+          "tag": "UI"
+        },
+        {
+          "name": "side-effect-tolerance",
+          "description": "The operation completes without throwing even when it triggers page side effects such as a navigation occurring mid-operation.",
+          "rating": 2,
+          "tag": null
+        },
+        {
+          "name": "structural-preservation-under-serialization",
+          "description": "Transferring a value across a serialization boundary preserves its structure and semantic type, including dates and self-referential (circular) objects.",
+          "rating": 3,
+          "tag": "API"
+        },
+        {
+          "name": "time-windowed-retention",
+          "description": "Data whose timestamp falls outside the active time window is discarded from the view while in-window data is retained.",
+          "rating": 2,
+          "tag": "UI"
+        },
+        {
+          "name": "trusted-input-activation",
+          "description": "User-provided content is promoted to an interactive form only when it satisfies validity or allow-list criteria, and is rendered inert otherwise.",
+          "rating": 1,
+          "tag": "input"
+        },
+        {
+          "name": "user-feedback-indication",
+          "description": "An action surfaces appropriate user feedback (a progress indicator, an advisory notice, or a transient status indicator) shown while or after the action and cleared when no longer relevant.",
+          "rating": 2,
+          "tag": "UI"
+        },
+        {
+          "name": "write-minimality",
+          "description": "A single logical change produces exactly one persistence operation, with no redundant or duplicate writes.",
+          "rating": 4,
+          "tag": "API"
+        }
+      ],
+      "tests": [
+        {
+          "name": "display correct paths when hovering tree items",
+          "description": "Hovering tree items shows a tooltip with the object's correct path.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/tooltips.e2e.spec.js",
+          "start_line": 332,
+          "end_line": 339,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Editing object properties should generate a single persistence operation",
+          "description": "Saving one edit to a Clock's properties issues exactly one PUT request, with no duplicate persistence operations.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/forms.e2e.spec.js",
+          "start_line": 135,
+          "end_line": 172,
+          "property_names": [
+            "write-minimality"
+          ]
+        },
+        {
+          "name": "cancelling form does not set bounds",
+          "description": "Discarding the time-conductor form leaves the bounds unchanged; only submitting applies them.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/timeConductor/timeConductor.e2e.spec.js",
+          "start_line": 198,
+          "end_line": 233,
+          "property_names": [
+            "dry-run-purity",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "preserve offsets and url params when switching between fixed and real-time mode",
+          "description": "Real-time offsets and their URL parameters survive switching to fixed mode and back, round-tripping unchanged and staying reflected in the URL.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/timeConductor/timeConductor.e2e.spec.js",
+          "start_line": 279,
+          "end_line": 323,
+          "property_names": [
+            "display-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Validate single object in search result @couchdb @network",
+          "description": "A query matching exactly one object returns a single result containing that object's name.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/search.e2e.spec.js",
+          "start_line": 173,
+          "end_line": 196,
+          "property_names": [
+            "return-value-contract",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "fall-back on base index if index not available @couchdb @network",
+          "description": "When the object_names index is absent (404), search falls back to the _find query and still returns results.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/search.e2e.spec.js",
+          "start_line": 232,
+          "end_line": 273,
+          "property_names": [
+            "capability-adaptation"
+          ]
+        },
+        {
+          "name": "Search results are debounced @couchdb @network",
+          "description": "Typing a query quickly is debounced into a single batched search request rather than one per keystroke.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/search.e2e.spec.js",
+          "start_line": 275,
+          "end_line": 311,
+          "property_names": [
+            "debouncing"
+          ]
+        },
+        {
+          "name": "Validate multiple objects in search results return partial matches",
+          "description": "A partial (prefix) query returns every object whose name matches, and only those.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/search.e2e.spec.js",
+          "start_line": 341,
+          "end_line": 460,
+          "property_names": [
+            "return-value-contract",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Log Plot ticks are functionally correct in regular and log mode and after refresh",
+          "description": "Asserts the plot's Y ticks are the correct values in regular mode and log mode, toggling log on and off and after saving restores the appropriate ticks each time.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/logPlot.e2e.spec.js",
+          "start_line": 69,
+          "end_line": 84,
+          "property_names": [
+            "display-correctness",
+            "reversibility"
+          ]
+        },
+        {
+          "name": "Plots do not re-request data when a plot is clicked",
+          "description": "Asserts that clicking on a plot canvas fires no historical-data network request.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/plotRendering.e2e.spec.js",
+          "start_line": 50,
+          "end_line": 62,
+          "property_names": [
+            "request-minimality"
+          ]
+        },
+        {
+          "name": "Verify sub-millisecond timeline coordinate precision under high-magnitude offsets (Micro-Zoom Mode)",
+          "description": "Asserts that under a hyper-zoomed 10ms range at 1000Hz the WebGL vertex buffers show no stair-stepping (no consecutive duplicate relative-X coordinates from truncation).",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/plotRendering.e2e.spec.js",
+          "start_line": 188,
+          "end_line": 301,
+          "property_names": [
+            "render-invariant"
+          ]
+        },
+        {
+          "name": "Export as JPG, will suggest the correct default filename",
+          "description": "Asserts that exporting a single plot as JPG suggests the filename '<name> - plot.jpeg'.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/plotViewActions.e2e.spec.js",
+          "start_line": 70,
+          "end_line": 111,
+          "property_names": [
+            "display-correctness",
+            "return-value-contract"
+          ]
+        },
+        {
+          "name": "Export as PNG, will suggest the correct default filename",
+          "description": "Asserts that exporting an overlay plot as PNG suggests the filename '<name> - plot.png'.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/plotViewActions.e2e.spec.js",
+          "start_line": 113,
+          "end_line": 124,
+          "property_names": [
+            "display-correctness",
+            "return-value-contract"
+          ]
+        },
+        {
+          "name": "Export as PNG, will suggest the correct default filename",
+          "description": "Asserts that exporting a stacked plot as PNG suggests the filename '<name> - stacked-plot.png'.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/plotViewActions.e2e.spec.js",
+          "start_line": 169,
+          "end_line": 180,
+          "property_names": [
+            "display-correctness",
+            "return-value-contract"
+          ]
+        },
+        {
+          "name": "We can preview plot in display layouts",
+          "description": "Asserts that a telemetry object placed in a display layout can be previewed as a plot canvas via the context menu, the large-view control, and the tree, and as both numeric and overlay-plot view types.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/previews.e2e.spec.js",
+          "start_line": 27,
+          "end_line": 90,
+          "property_names": [
+            "addressing-equivalence",
+            "representation-consistency"
+          ]
+        },
+        {
+          "name": "Tags work with Overlay Plots",
+          "description": "Asserts that tags added to an overlay plot pass the basic add/verify/remove checks, apply to its telemetry item, and that searching for a tag locates the tagged item (pausing the real-time plot).",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/tagging.e2e.spec.js",
+          "start_line": 41,
+          "end_line": 104,
+          "property_names": [
+            "deletion-completeness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Tags work with Plot View of telemetry items",
+          "description": "Asserts that tags added on a plot view of a telemetry item pass the basic add/verify/remove checks.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/tagging.e2e.spec.js",
+          "start_line": 106,
+          "end_line": 119,
+          "property_names": [
+            "deletion-completeness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Tags work with Stacked Plots",
+          "description": "Asserts that tags added to a stacked plot pass the basic add/verify/remove checks and apply to its telemetry item.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/tagging.e2e.spec.js",
+          "start_line": 150,
+          "end_line": 186,
+          "property_names": [
+            "deletion-completeness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Plot time-series ticks are functionally correct over a period of 6 months, between two years",
+          "description": "Asserts the plot's X-axis time ticks have the correct count and month-boundary labels for a six-month range spanning two years.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/timeTicks.e2e.spec.js",
+          "start_line": 21,
+          "end_line": 31,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Plot time-series ticks are functionally correct over a period of days",
+          "description": "Asserts the plot's X-axis time ticks have the correct count and date labels for a multi-week range.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/timeTicks.e2e.spec.js",
+          "start_line": 33,
+          "end_line": 43,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Plot time-series ticks are functionally correct over a period of hours",
+          "description": "Asserts the plot's X-axis time ticks have the correct count and labels for an eight-hour range.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/timeTicks.e2e.spec.js",
+          "start_line": 45,
+          "end_line": 55,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Plot time-series ticks are functionally correct over a period of minutes",
+          "description": "Asserts the plot's X-axis time ticks have the correct count and labels for a twenty-minute range.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/timeTicks.e2e.spec.js",
+          "start_line": 57,
+          "end_line": 67,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Plot time-series ticks are functionally correct over a period of seconds",
+          "description": "Asserts the plot's X-axis time ticks have the correct count and labels for a one-minute range.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/plot/timeTicks.e2e.spec.js",
+          "start_line": 69,
+          "end_line": 79,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Can count up from a target date",
+          "description": "Asserts that a timer with a past target date shows a plus/count-up direction and its seconds value increases over time.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/timer/timer.e2e.spec.js",
+          "start_line": 98,
+          "end_line": 234,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Folder view persists when navigating away and back",
+          "description": "Asserts that a folder switched to List view stays in List view after navigating away to another object and back.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/folders/viewPersist.e2e.spec.js",
+          "start_line": 48,
+          "end_line": 70,
+          "property_names": [
+            "persistence-across-reload"
+          ]
+        },
+        {
+          "name": "Default and new sections are automatically named Unnamed Section with Unnamed Page",
+          "description": "Asserts that both the default section/page and a newly added section/page are automatically named 'Unnamed Section' and 'Unnamed Page'.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebook.e2e.spec.js",
+          "start_line": 109,
+          "end_line": 136,
+          "property_names": []
+        },
+        {
+          "name": "can export notebook as text",
+          "description": "Asserts that exporting a notebook as text produces a download whose contents contain the entered entry text.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebook.e2e.spec.js",
+          "start_line": 251,
+          "end_line": 264,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "When a new entry is created, it should be focused and selected",
+          "description": "Asserts that a newly created notebook entry is focused with its input visible and carries the is-selected class.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebook.e2e.spec.js",
+          "start_line": 293,
+          "end_line": 301,
+          "property_names": [
+            "focus-on-creation"
+          ]
+        },
+        {
+          "name": "When an object is dropped into a notebook, a new entry is created and it should be focused",
+          "description": "Asserts that dropping an object onto a notebook creates a new entry embed with the object's correct icon and name.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebook.e2e.spec.js",
+          "start_line": 302,
+          "end_line": 325,
+          "property_names": [
+            "representation-consistency"
+          ]
+        },
+        {
+          "name": "when an invalid link is entered into a notebook entry, it does not become clickable when viewing",
+          "description": "Asserts that a link missing its protocol typed into an entry is not rendered as a clickable anchor.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebook.e2e.spec.js",
+          "start_line": 401,
+          "end_line": 417,
+          "property_names": [
+            "trusted-input-activation"
+          ]
+        },
+        {
+          "name": "when a valid secure link is entered into a notebook entry, it becomes clickable when viewing",
+          "description": "Asserts that a valid secure https whitelisted link typed into an entry renders as a clickable anchor that opens the target in a popup.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebook.e2e.spec.js",
+          "start_line": 452,
+          "end_line": 478,
+          "property_names": [
+            "trusted-input-activation"
+          ]
+        },
+        {
+          "name": "Prevents pasting text into selected notebook entry if not editing",
+          "description": "Asserts that pasting into a committed, non-editing notebook entry has no effect and does not duplicate its text.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebook.e2e.spec.js",
+          "start_line": 580,
+          "end_line": 601,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "When changing the name of a notebook in the browse bar, new notebook changes are not lost",
+          "description": "Asserts that renaming a notebook twice in the browse bar updates the tree and browse bar name while a newly entered entry is preserved.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebook.e2e.spec.js",
+          "start_line": 603,
+          "end_line": 659,
+          "property_names": [
+            "round-trip-fidelity",
+            "side-effect-tolerance"
+          ]
+        },
+        {
+          "name": "A snapshot can be Viewed, Annotated, display deleted, and saved from Container with 3 dot action menu",
+          "description": "Asserts that a snapshot can be viewed, text-annotated via Painterro, saved, and reopened with the annotated image still shown.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebookSnapshots.e2e.spec.js",
+          "start_line": 84,
+          "end_line": 118,
+          "property_names": [
+            "representation-consistency",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Can load tags",
+          "description": "Asserts that the Add Tag autocomplete lists the available tags Science, Drilling, and Driving.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebookTags.e2e.spec.js",
+          "start_line": 40,
+          "end_line": 52,
+          "property_names": [
+            "return-value-contract"
+          ]
+        },
+        {
+          "name": "Can cancel adding tags",
+          "description": "Asserts that cancelling tag entry (by clicking the search input) at two different points restores the Add Tag button without adding a tag.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebookTags.e2e.spec.js",
+          "start_line": 83,
+          "end_line": 103,
+          "property_names": [
+            "dry-run-purity"
+          ]
+        },
+        {
+          "name": "Tags persist across reload",
+          "description": "Asserts that tags applied to multiple notebook entries remain present after a page reload.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebookTags.e2e.spec.js",
+          "start_line": 196,
+          "end_line": 220,
+          "property_names": [
+            "persistence-across-reload"
+          ]
+        },
+        {
+          "name": "Search tests",
+          "description": "Asserts that a partial tag search against the CouchDB backend returns only the matching tag and shows 'No results found' for a non-matching query.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/notebookWithCouchDB.e2e.spec.js",
+          "start_line": 47,
+          "end_line": 97,
+          "property_names": [
+            "return-value-contract"
+          ]
+        },
+        {
+          "name": "Can be renamed @addInit",
+          "description": "Asserts that the browse bar displays the restricted notebook's renamed name.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/restrictedNotebook.e2e.spec.js",
+          "start_line": 40,
+          "end_line": 42,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Disallows embeds to be deleted if page locked @addInit",
+          "description": "Asserts that an embed on a locked page does not offer a 'Remove This Embed' action.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/restrictedNotebook.e2e.spec.js",
+          "start_line": 150,
+          "end_line": 163,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "basic functionality",
+          "description": "Asserts that exporting a restricted notebook as text produces a download whose contents contain the entered entry text.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/notebook/restrictedNotebook.e2e.spec.js",
+          "start_line": 165,
+          "end_line": 180,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Changing the displayed tab should not be persisted if the view is locked",
+          "description": "Asserts that tab changes are not persisted across navigation when the view is locked but are persisted when it is unlocked.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/tabs/tabs.e2e.spec.js",
+          "start_line": 96,
+          "end_line": 144,
+          "property_names": [
+            "dry-run-purity",
+            "persistence-across-reload"
+          ]
+        },
+        {
+          "name": "Eager Load Tabs is the default and then can be toggled off",
+          "description": "Asserts that the Eager Load Tabs property defaults to unchecked and can be toggled on, with the checkbox reflecting the change.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/tabs/tabs.e2e.spec.js",
+          "start_line": 146,
+          "end_line": 160,
+          "property_names": [
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Can add and remove telemetry sources",
+          "description": "Adds a telemetry source to a gauge, replaces it with a second one (single-source replace modal), and deletes it, verifying the elements pool updates accordingly.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/gauge/gauge.e2e.spec.js",
+          "start_line": 43,
+          "end_line": 103,
+          "property_names": [
+            "deletion-completeness",
+            "selection-cardinality"
+          ]
+        },
+        {
+          "name": "Gauge does not display NaN when data not available",
+          "description": "Verifies that a gauge whose telemetry source is delayed displays a placeholder rather than NaN when no data is available.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/gauge/gauge.e2e.spec.js",
+          "start_line": 139,
+          "end_line": 169,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Gauge does not break when an object is missing",
+          "description": "Removes a gauge's telemetry object from local storage and confirms the gauge still adjusts time bounds and throws no page errors.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/gauge/gauge.e2e.spec.js",
+          "start_line": 171,
+          "end_line": 220,
+          "property_names": [
+            "round-trip-fidelity",
+            "side-effect-tolerance"
+          ]
+        },
+        {
+          "name": "Gauge enforces composition policy",
+          "description": "Verifies the gauge rejects disallowed child types (Folder, Display Layout) by keeping the Save button disabled.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/gauge/gauge.e2e.spec.js",
+          "start_line": 222,
+          "end_line": 240,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "Can right click on image and open it in a new tab @2p",
+          "description": "Right-clicks the image, confirms the context menu, and opens the image in a new tab whose URL points at the .jpg.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/imagery/exampleImagery.e2e.spec.js",
+          "start_line": 83,
+          "end_line": 104,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Can adjust image brightness/contrast by dragging the sliders",
+          "description": "Adjusts image brightness and contrast by dragging the sliders and asserts the resulting CSS filter values.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/imagery/exampleImagery.e2e.spec.js",
+          "start_line": 178,
+          "end_line": 190,
+          "property_names": [
+            "display-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Resizing the layout changes thumbnail visibility and size",
+          "description": "Resizes the imagery object's height and verifies the thumbnail strip's visibility and small-vs-regular size change accordingly.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/imagery/exampleImagery.e2e.spec.js",
+          "start_line": 521,
+          "end_line": 556,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Imagery View operations",
+          "description": "Runs the full imagery view operations (zoom, pan, image navigation, out-of-bounds image discard, brightness/contrast) in a tabs-view context.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/imagery/exampleImagery.e2e.spec.js",
+          "start_line": 625,
+          "end_line": 665,
+          "property_names": [
+            "display-correctness",
+            "reversibility",
+            "time-windowed-retention"
+          ]
+        },
+        {
+          "name": "Imagery View operations",
+          "description": "Runs the full imagery view operations (zoom, pan, image navigation, out-of-bounds image discard, brightness/contrast) on the imagery inside a tabs view.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/imagery/exampleImagery.e2e.spec.js",
+          "start_line": 667,
+          "end_line": 686,
+          "property_names": [
+            "display-correctness",
+            "reversibility",
+            "time-windowed-retention"
+          ]
+        },
+        {
+          "name": "Clicking a thumbnail loads the image in large view",
+          "description": "Hovers to reveal a timestrip thumbnail, clicks it to open the large view, and verifies the large image is the same image as the clicked thumbnail.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/imagery/exampleImagery.e2e.spec.js",
+          "start_line": 688,
+          "end_line": 1115,
+          "property_names": [
+            "display-correctness",
+            "hover-disclosure",
+            "representation-consistency"
+          ]
+        },
+        {
+          "name": "Get background-image url from background-image css prop @clock",
+          "description": "Reads the focused image's background-image URL and verifies it changes to the latest image after the clock advances.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/imagery/exampleImageryControlledClock.e2e.spec.js",
+          "start_line": 214,
+          "end_line": 248,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Imagery Time Bounding @clock",
+          "description": "Advances the mocked clock in a flexible layout and verifies out-of-bounds image thumbnails are discarded while in-bounds ones remain.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/imagery/exampleImageryControlledClock.e2e.spec.js",
+          "start_line": 250,
+          "end_line": 292,
+          "property_names": [
+            "time-windowed-retention"
+          ]
+        },
+        {
+          "name": "poll question indicator remains when blank poll set",
+          "description": "Verifies the poll question indicator remains visible after setting a blank poll question.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/operatorStatus/operatorStatus.e2e.spec.js",
+          "start_line": 67,
+          "end_line": 77,
+          "property_names": [
+            "idempotence"
+          ]
+        },
+        {
+          "name": "operator status table reflects answered values",
+          "description": "Sets and changes the operator's status and verifies the manage-poll status table reflects the selected value each time.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/operatorStatus/operatorStatus.e2e.spec.js",
+          "start_line": 78,
+          "end_line": 120,
+          "property_names": [
+            "display-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Poll indicator is visible when window is really small",
+          "description": "Shrinks the viewport and verifies the poll indicator remains visible and within the viewport with indicators expanded.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/operatorStatus/operatorStatus.e2e.spec.js",
+          "start_line": 158,
+          "end_line": 170,
+          "property_names": [
+            "responsive-relayout"
+          ]
+        },
+        {
+          "name": "indicates when telemetry is stale and clears staleness when telemetry is not stale",
+          "description": "Verifies the object view gains the is-stale class when telemetry goes stale and loses it when telemetry becomes fresh again.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/staleness.e2e.spec.js",
+          "start_line": 54,
+          "end_line": 90,
+          "property_names": [
+            "display-correctness",
+            "reversibility"
+          ]
+        },
+        {
+          "name": "Bar Graph can be given a fixed Y axis range",
+          "description": "Sets a fixed Y-axis range on a Bar Graph, then verifies Plotly renders that range and the persisted configuration stores the values and autoscale=false.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 49,
+          "end_line": 68,
+          "property_names": [
+            "display-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Scatter Plot can be given fixed X and Y axis ranges",
+          "description": "Sets fixed X and Y ranges on a Scatter Plot and verifies both the rendered Plotly ranges and the persisted configuration match the entered bounds.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 70,
+          "end_line": 89,
+          "property_names": [
+            "display-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Fixed scaling is read-only outside of edit mode",
+          "description": "After saving a fixed range, verifies that in browse mode the axis-scaling values render as static text rather than editable form controls.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 91,
+          "end_line": 108,
+          "property_names": [
+            "display-correctness",
+            "representation-consistency"
+          ]
+        },
+        {
+          "name": "A fixed range applies to a Scatter Plot with no data yet",
+          "description": "Verifies a fixed Y range is applied to a Scatter Plot that has no telemetry data yet.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 123,
+          "end_line": 133,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Re-enabling auto scale returns the axis to automatic ranging",
+          "description": "Sets a fixed range then re-checks auto scale and verifies the axis returns to automatic ranging.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 135,
+          "end_line": 150,
+          "property_names": [
+            "display-correctness",
+            "reversibility"
+          ]
+        },
+        {
+          "name": "A fixed range takes precedence over Scatter Plot underlay ranges",
+          "description": "Verifies underlay ranges drive the axes while auto scale is on, but a configured fixed range takes precedence over them.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 177,
+          "end_line": 201,
+          "property_names": [
+            "display-correctness",
+            "override-precedence"
+          ]
+        },
+        {
+          "name": "Bar Graph Y axis can be drawn on a log scale",
+          "description": "Enables Y-axis log mode on a Bar Graph and verifies the rendered axis type is log and the configuration persists logMode=true.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 237,
+          "end_line": 254,
+          "property_names": [
+            "display-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Scatter Plot Y axis can be drawn on a log scale",
+          "description": "Enables Y-axis log mode on a Scatter Plot and verifies the Y axis becomes log while the X axis stays linear.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 256,
+          "end_line": 275,
+          "property_names": [
+            "display-correctness",
+            "independence"
+          ]
+        },
+        {
+          "name": "A fixed range is given to Plotly in log units",
+          "description": "Verifies a log-mode fixed range of 1 to 1000 reaches Plotly as exponents [0, 3] while the configuration still stores the raw data-unit values.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 277,
+          "end_line": 297,
+          "property_names": [
+            "display-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "A log axis can be anchored and labelled at zero",
+          "description": "Verifies a zero-anchored log axis renders explicit tick labels starting at 0, stays fixed (not autoranged), and persists its range.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 337,
+          "end_line": 364,
+          "property_names": [
+            "display-correctness",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Enabling log mode clamps a negative minimum to zero",
+          "description": "Enables log mode with a negative minimum and verifies the minimum is clamped to zero, the range stays fixed, and the clamped value persists.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 475,
+          "end_line": 511,
+          "property_names": [
+            "input-clamping",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "Enabling log mode re-enables auto scale for a range entirely below zero",
+          "description": "Enables log mode on a range entirely below zero and verifies auto scale is re-enabled with an explanatory notice and persisted as autoscale=true.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/charts/chartAxisScaling.e2e.spec.js",
+          "start_line": 513,
+          "end_line": 543,
+          "property_names": [
+            "safe-state-fallback",
+            "user-feedback-indication"
+          ]
+        },
+        {
+          "name": "can add/remove Ellipse to a single layout",
+          "description": "Adds then removes an Ellipse drawing element in both parent and child layouts, asserting it appears and then disappears.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/displayLayout/displayLayout.e2e.spec.js",
+          "start_line": 198,
+          "end_line": 206,
+          "property_names": [
+            "deletion-completeness",
+            "reversibility"
+          ]
+        },
+        {
+          "name": "alpha-numeric widget telemetry value exactly matches latest telemetry value received in fixed time",
+          "description": "Adds a Sine Wave Generator to a display layout and verifies the alpha-numeric widget displays exactly the latest telemetry value in fixed time mode.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/displayLayout/displayLayout.e2e.spec.js",
+          "start_line": 268,
+          "end_line": 306,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "items in a display layout can be removed with object tree context menu when viewing the display layout",
+          "description": "Removes a layout item via the object-tree context menu while viewing the layout and verifies the frame count drops to zero.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/displayLayout/displayLayout.e2e.spec.js",
+          "start_line": 307,
+          "end_line": 344,
+          "property_names": [
+            "deletion-completeness"
+          ]
+        },
+        {
+          "name": "Same objects with different request options have unique subscriptions",
+          "description": "Adds the same state generator to two tables with opposite filters and verifies neither table ever shows the other's filtered values, confirming independent subscriptions.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/displayLayout/displayLayout.e2e.spec.js",
+          "start_line": 505,
+          "end_line": 689,
+          "property_names": [
+            "independence"
+          ]
+        },
+        {
+          "name": "Conditional styling, using a Condition Set, will style correctly based on the output @clock",
+          "description": "Drives a condition set from a state generator and verifies a box's background color switches to red when the state is OFF and back to default when ON.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/styling/conditionSetStyling.e2e.spec.js",
+          "start_line": 66,
+          "end_line": 161,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Shows correct output when no staleness rule is applied",
+          "description": "Verifies a condition widget's rendered output label matches the condition set's current output as telemetry changes, with no staleness rule applied.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/styling/conditionWidget.e2e.spec.js",
+          "start_line": 134,
+          "end_line": 166,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "styling the flexible layout properly applies the styles to flex layout",
+          "description": "Sets border, background, and text colors on a flexible layout, verifies they apply, and verifies they persist after reload.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/styling/flexLayoutStyling.e2e.spec.js",
+          "start_line": 68,
+          "end_line": 131,
+          "property_names": [
+            "display-correctness",
+            "persistence-across-reload",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "when the \"no style\" option is selected, background and text should be reset to inherited styles",
+          "description": "Applies styles then selects the No Style option and verifies background and text reset to inherited defaults, persisting after reload.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/styling/flexLayoutStyling.e2e.spec.js",
+          "start_line": 371,
+          "end_line": 449,
+          "property_names": [
+            "persistence-across-reload",
+            "reversibility"
+          ]
+        },
+        {
+          "name": "styling the overlay plot properly applies the styles to all containers",
+          "description": "Sets colors and fonts on a stacked plot, verifies they apply and persist after reload, and verifies child items inherit only the text properties.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/styling/stackedPlotStyling.e2e.spec.js",
+          "start_line": 86,
+          "end_line": 172,
+          "property_names": [
+            "persistence-across-reload",
+            "representation-consistency",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "styles button only appears when appropriate component selected",
+          "description": "Verifies the Styles tab is shown when a styleable layout or plot is selected and hidden when a non-styleable container is selected.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/styling/styleInspectorOptions.e2e.spec.js",
+          "start_line": 48,
+          "end_line": 77,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Displays all plan events",
+          "description": "Navigates to a Gantt Chart and asserts every activity from the imported plan is rendered.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/planning/ganttChart.e2e.spec.js",
+          "start_line": 56,
+          "end_line": 60,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Displays all plan events",
+          "description": "Asserts all activities of a plan are rendered in the plan view.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/planning/plan.e2e.spec.js",
+          "start_line": 53,
+          "end_line": 55,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "will scale activities properly in the Time Strip View",
+          "description": "Shrinks the viewport in the Time Strip View and asserts all activities remain scaled within the visible area.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/planning/resizing.e2e.spec.js",
+          "start_line": 111,
+          "end_line": 141,
+          "property_names": [
+            "responsive-relayout"
+          ]
+        },
+        {
+          "name": "Time strip now line",
+          "description": "Asserts the now marker is visible in real-time mode and hidden when the current time falls outside the fixed time axis.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/planning/timestrip.e2e.spec.js",
+          "start_line": 172,
+          "end_line": 214,
+          "property_names": [
+            "predicate-correctness"
+          ]
+        },
+        {
+          "name": "Condition set object properties persist in main view and inspector after reload @localStorage",
+          "description": "Asserts a condition set's name in the main view and inspector survives a page reload unchanged.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/conditionSet/conditionSet.e2e.spec.js",
+          "start_line": 71,
+          "end_line": 95,
+          "property_names": [
+            "persistence-across-reload"
+          ]
+        },
+        {
+          "name": "condition set object can be modified on @localStorage",
+          "description": "Renames a condition set and asserts the new name appears in the main view, inspector, tree, and search, and persists after reload.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/conditionSet/conditionSet.e2e.spec.js",
+          "start_line": 97,
+          "end_line": 170,
+          "property_names": [
+            "persistence-across-reload",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "ConditionSet should display appropriate view options",
+          "description": "Adds telemetry to a condition set and asserts the view switcher offers the expected views and each selected view renders.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/conditionSet/conditionSet.e2e.spec.js",
+          "start_line": 244,
+          "end_line": 300,
+          "property_names": [
+            "predicate-correctness",
+            "representation-consistency"
+          ]
+        },
+        {
+          "name": "ConditionSet has correct outputs when test data is enabled",
+          "description": "Configures a condition set with test data enabled and asserts it evaluates to the correct output value.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/conditionSet/conditionSet.e2e.spec.js",
+          "start_line": 370,
+          "end_line": 425,
+          "property_names": [
+            "derived-state-correctness"
+          ]
+        },
+        {
+          "name": "should toggle shouldFetchHistorical property in inspector",
+          "description": "Toggles the shouldFetchHistorical config on then off and asserts the persisted object property matches each state.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/conditionSet/conditionSet.e2e.spec.js",
+          "start_line": 434,
+          "end_line": 504,
+          "property_names": [
+            "reversibility",
+            "round-trip-fidelity"
+          ]
+        },
+        {
+          "name": "You can remove telemetry from a condition set with existing conditions",
+          "description": "Removes a telemetry object from a condition set and asserts it no longer appears in the Elements inspector list.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/conditionSet/conditionSet.e2e.spec.js",
+          "start_line": 506,
+          "end_line": 539,
+          "property_names": [
+            "deletion-completeness"
+          ]
+        },
+        {
+          "name": "ConditionSet should display appropriate view options",
+          "description": "Adds telemetry to a condition set and asserts the view switcher offers the expected views and each selected view renders.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/conditionSet/conditionSetOperations.e2e.spec.js",
+          "start_line": 63,
+          "end_line": 119,
+          "property_names": [
+            "predicate-correctness",
+            "representation-consistency"
+          ]
+        },
+        {
+          "name": "Short circuit evaluation does not cause incorrect evaluation https://github.com/nasa/openmct/issues/7992",
+          "description": "Drives test-data inputs across values and asserts the active condition name matches the correct condition for each input combination.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/conditionSet/conditionSetOperations.e2e.spec.js",
+          "start_line": 246,
+          "end_line": 339,
+          "property_names": [
+            "derived-state-correctness"
+          ]
+        },
+        {
+          "name": "When selecting a fault, it has an \"is-selected\" class and its information shows in the inspector",
+          "description": "Selects a single fault and asserts it gains the is-selected class and its details appear in the inspector.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/faultManagement/faultManagement.e2e.spec.js",
+          "start_line": 53,
+          "end_line": 66,
+          "property_names": [
+            "predicate-correctness",
+            "selection-cardinality"
+          ]
+        },
+        {
+          "name": "Allows you to shelve multiple faults",
+          "description": "Shelves two faults and asserts both leave the standard view and appear in the shelved view.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/faultManagement/faultManagement.e2e.spec.js",
+          "start_line": 122,
+          "end_line": 147,
+          "property_names": [
+            "predicate-correctness",
+            "selection-cardinality"
+          ]
+        },
+        {
+          "name": "Allows you to search faults",
+          "description": "Searches faults by namespace, name, and trigger time and asserts only matching faults are shown, with all restored when cleared.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/faultManagement/faultManagement.e2e.spec.js",
+          "start_line": 172,
+          "end_line": 214,
+          "property_names": [
+            "predicate-correctness"
+          ]
+        },
+        {
+          "name": "Rows are updatable in place",
+          "description": "Verifies a later telemetry datum matching an existing row's key merges into that row in place rather than appending a new row.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/example/eventWithAcknowledgeGenerator.e2e.spec.js",
+          "start_line": 43,
+          "end_line": 67,
+          "property_names": [
+            "display-correctness",
+            "in-place-row-update"
+          ]
+        },
+        {
+          "name": "Create new Sine Wave Generator Object and validate create Form Logic",
+          "description": "Creates a Sine Wave Generator and validates the create form's input logic.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/example/generator/sineWaveLimitProvider.e2e.spec.js",
+          "start_line": 30,
+          "end_line": 163,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "If empty selector is provided, throws an error",
+          "description": "Asserts that starting Open MCT with an empty selector throws an 'Invalid HTML element or selector' error and does not render.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/MCT.e2e.spec.js",
+          "start_line": 106,
+          "end_line": 135,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "Create a basic object and verify that it can be linked to another folder",
+          "description": "Verifies Save is disabled for invalid link targets and that linking a folder to My Items succeeds.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/moveAndLinkObjects.e2e.spec.js",
+          "start_line": 191,
+          "end_line": 292,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "Columns/Rows Layout Toggle",
+          "description": "Verifies toggling to rows layout and back to columns layout restores the original orientation.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/flexibleLayout/flexibleLayout.e2e.spec.js",
+          "start_line": 308,
+          "end_line": 317,
+          "property_names": [
+            "reversibility"
+          ]
+        },
+        {
+          "name": "Create a basic object and verify that it can be exported as JSON from Tree",
+          "description": "Exports a folder as JSON from the tree context menu and verifies the file preserves the object's name and type.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/importAndExportAsJSON/exportAsJson.e2e.spec.js",
+          "start_line": 44,
+          "end_line": 73,
+          "property_names": [
+            "structural-preservation-under-serialization"
+          ]
+        },
+        {
+          "name": "Create a basic object and verify that it can be exported as JSON from 3 dot menu",
+          "description": "Exports a folder as JSON from the 3-dot menu and verifies the file preserves the object's name and type.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/importAndExportAsJSON/exportAsJson.e2e.spec.js",
+          "start_line": 74,
+          "end_line": 97,
+          "property_names": [
+            "addressing-equivalence",
+            "structural-preservation-under-serialization"
+          ]
+        },
+        {
+          "name": "Verify that a nested Object can be exported as JSON",
+          "description": "Exports a folder containing a nested timer and verifies both objects and the folder's composition are preserved in the JSON.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/importAndExportAsJSON/exportAsJson.e2e.spec.js",
+          "start_line": 98,
+          "end_line": 146,
+          "property_names": [
+            "structural-preservation-under-serialization"
+          ]
+        },
+        {
+          "name": "Verify that the ExportAsJSON dropdown does not appear for the item X",
+          "description": "Verifies the Export as JSON action is absent for a non-composable Fault Management object.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/importAndExportAsJSON/exportAsJson.e2e.spec.js",
+          "start_line": 147,
+          "end_line": 173,
+          "property_names": [
+            "precondition-enforcement"
+          ]
+        },
+        {
+          "name": "Verify that the ExportAsJSON action creates a progressbar",
+          "description": "Verifies a large JSON export surfaces a progress bar and advisory message while the download runs.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/importAndExportAsJSON/exportAsJson.e2e.spec.js",
+          "start_line": 174,
+          "end_line": 210,
+          "property_names": [
+            "user-feedback-indication"
+          ]
+        },
+        {
+          "name": "in edit mode, LAD Tables provide ability to hide columns",
+          "description": "Verifies LAD table column checkboxes hide and show columns and that the visibility state persists across save and reload.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/lad/lad.e2e.spec.js",
+          "start_line": 54,
+          "end_line": 170,
+          "property_names": [
+            "display-correctness",
+            "persistence-across-reload",
+            "reversibility"
+          ]
+        },
+        {
+          "name": "LAD Tables don't allow selection of rows but does show context click menus",
+          "description": "Verifies LAD table rows are not text-selectable (user-select none) yet still expose the expected right-click context menu items.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/lad/lad.e2e.spec.js",
+          "start_line": 216,
+          "end_line": 250,
+          "property_names": [
+            "display-correctness",
+            "predicate-correctness"
+          ]
+        },
+        {
+          "name": "telemetry value exactly matches latest telemetry value received in realtime mode",
+          "description": "Verifies the LAD table value exactly matches the latest telemetry value received in real-time mode.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/lad/lad.e2e.spec.js",
+          "start_line": 251,
+          "end_line": 278,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Ensure we have numbers in cells",
+          "description": "Verifies each LAD Table Set cell renders a finite numeric telemetry value rather than a placeholder.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/lad/ladSet.e2e.spec.js",
+          "start_line": 27,
+          "end_line": 69,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "on load, auto scrolls to top for descending, and to bottom for ascending",
+          "description": "Verifies the table auto-scrolls to top for descending sort and to bottom for ascending sort, with the sort direction persisting across renavigation.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/telemetryTable/telemetryTable.e2e.spec.js",
+          "start_line": 68,
+          "end_line": 107,
+          "property_names": [
+            "display-correctness",
+            "persistence-across-reload"
+          ]
+        },
+        {
+          "name": "Supports filtering telemetry by regular text search",
+          "description": "Verifies a plain-text filter shows only rows matching the term and yields no rows when none match.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/telemetryTable/telemetryTable.e2e.spec.js",
+          "start_line": 160,
+          "end_line": 198,
+          "property_names": [
+            "return-value-contract"
+          ]
+        },
+        {
+          "name": "CSV export does not prefix the Name column for non-formula-injection object names",
+          "description": "Verifies CSV export leaves non-formula-like object names unprefixed, complementing the formula-injection escaping case.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/telemetryTable/telemetryTable.e2e.spec.js",
+          "start_line": 275,
+          "end_line": 340,
+          "property_names": [
+            "injection-safety",
+            "predicate-complementarity"
+          ]
+        },
+        {
+          "name": "Verify that the create button appears and that the Folder Domain Object is available for selection",
+          "description": "Verifies the Create button opens a menu in which the Folder domain object is available for selection.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/smoke.e2e.spec.js",
+          "start_line": 38,
+          "end_line": 49,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Closing notification list after notification banner disappeared does not cause it to open automatically",
+          "description": "After dismissing a notification banner and closing the notification list, editing and saving an object does not cause the notification list to reopen automatically.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/notification.e2e.spec.js",
+          "start_line": 80,
+          "end_line": 120,
+          "property_names": [
+            "independence",
+            "predicate-correctness"
+          ]
+        },
+        {
+          "name": "Verify that user can use the datepicker in the TC",
+          "description": "Opening the Time Conductor datepicker shows the dialog, and selecting a date cell closes it.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/plugins/timeConductor/datepicker.e2e.spec.js",
+          "start_line": 37,
+          "end_line": 46,
+          "property_names": [
+            "predicate-correctness"
+          ]
+        },
+        {
+          "name": "Clicking on an object in the path of a recent object navigates to the object",
+          "description": "Clicking an ancestor object in a recent object's breadcrumb path navigates to that object and updates the hash URL accordingly.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/recentObjects.e2e.spec.js",
+          "start_line": 114,
+          "end_line": 156,
+          "property_names": [
+            "navigation-correctness"
+          ]
+        },
+        {
+          "name": "Clicking on the 'target button' scrolls the object into view in the tree and highlights it",
+          "description": "Clicking a recent object's target button expands its parent folder, scrolls the item into view, and briefly highlights it before the highlight is removed.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/recentObjects.e2e.spec.js",
+          "start_line": 157,
+          "end_line": 183,
+          "property_names": [
+            "predicate-correctness",
+            "user-feedback-indication"
+          ]
+        },
+        {
+          "name": "Displays objects and aliases uniquely",
+          "description": "Creating an alias via the link action produces a distinct recent-objects entry marked as an alias whose breadcrumb path differs from the original object's.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/recentObjects.e2e.spec.js",
+          "start_line": 189,
+          "end_line": 239,
+          "property_names": [
+            "display-correctness"
+          ]
+        },
+        {
+          "name": "Creating a child object on one tab and expanding its parent on the other shows the correct composition @2p",
+          "description": "A folder created on one tab becomes visible in the tree of a second tab after expanding the parent folder.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/tree.e2e.spec.js",
+          "start_line": 57,
+          "end_line": 89,
+          "property_names": [
+            "representation-consistency"
+          ]
+        },
+        {
+          "name": "Opening and closing an item before the request has been fulfilled will abort the request @couchdb @network",
+          "description": "Rapidly double-clicking to expand then collapse a folder before its request resolves aborts the in-flight _all_docs network request.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/tree.e2e.spec.js",
+          "start_line": 190,
+          "end_line": 296,
+          "property_names": [
+            "debouncing"
+          ]
+        },
+        {
+          "name": "Show a new root object when added asynchronously",
+          "description": "Adding a root object asynchronously after load makes it appear in the tree.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/tree.e2e.spec.js",
+          "start_line": 306,
+          "end_line": 321,
+          "property_names": []
+        },
+        {
+          "name": "Content in inspector can be scrolled to vertically",
+          "description": "Scrolling the overflowing inspector properties panel brings the last property value, initially out of the viewport, into view.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/ui/inspector.e2e.spec.js",
+          "start_line": 139,
+          "end_line": 174,
+          "property_names": [
+            "predicate-correctness",
+            "scroll-reachability"
+          ]
+        },
+        {
+          "name": "Inspector tabs show the correct tabs per view and mode",
+          "description": "For each view type the inspector shows the expected number and order of tabs in browse mode and in edit mode.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/ui/inspector.e2e.spec.js",
+          "start_line": 176,
+          "end_line": 220,
+          "property_names": [
+            "display-correctness",
+            "ordering-correctness"
+          ]
+        },
+        {
+          "name": "allows wrapping to span multiple lines",
+          "description": "In multi-line mode the indicators container grows taller when the viewport is resized so indicators wrap to multiple lines.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/ui/statusArea.e2e.spec.js",
+          "start_line": 107,
+          "end_line": 121,
+          "property_names": [
+            "layout-mode-fidelity"
+          ]
+        },
+        {
+          "name": "collapse/expand toggle and single/multi line toggle work in conjunction",
+          "description": "The collapse/expand and single/multi line toggles combine so that the indicators container renders at the layout height corresponding to the active mode combination.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/ui/statusArea.e2e.spec.js",
+          "start_line": 169,
+          "end_line": 211,
+          "property_names": [
+            "layout-mode-fidelity"
+          ]
+        },
+        {
+          "name": "collapse/expand toggle and single/multi line toggle state saved in local storage",
+          "description": "The collapse/expand and single/multi line toggle states are saved and restored after a page reload.",
+          "language": "javascript",
+          "test_path": "e2e/tests/functional/ui/statusArea.e2e.spec.js",
+          "start_line": 213,
+          "end_line": 246,
+          "property_names": [
+            "persistence-across-reload"
+          ]
+        }
+      ]
+    }
+  ]
+}
