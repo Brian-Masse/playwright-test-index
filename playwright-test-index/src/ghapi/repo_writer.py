@@ -1,16 +1,13 @@
 import os
-import re
 import subprocess
 from pathlib import Path, PurePosixPath
 from typing import Protocol
 
-from models.repo_ref import RepoRef
+from models.repo_ref import COMMIT_SHA_PATTERN, FULL_NAME_PATTERN, RepoRef
 
 GITHUB_CLONE_URL: str = "https://github.com/{full_name}.git"
 REMOTE_NAME: str = "origin"
 CLONE_TIMEOUT_SECONDS: int = 300
-FULL_NAME_PATTERN: re.Pattern[str] = re.compile(r"^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$")
-COMMIT_SHA_PATTERN: re.Pattern[str] = re.compile(r"^[0-9a-f]{40}$")
 PARENT_DIR: str = ".."
 
 
@@ -38,36 +35,90 @@ class CloneError(Exception):
     """Raised when a repository cannot be cloned."""
 
 
-# MARK: RepoCloner
-class RepoCloner(Protocol):
-    """Clones a repository at a specific commit into a directory."""
+# MARK: RepoIOManager
+class RepoIOManager(Protocol):
+    """Provides and removes the per-repo storage locations that checkouts are written into."""
 
-    # MARK: clone
-    def clone(
-        self, repo: RepoRef, destination: Path, include_dirs: list[str] | None = None
-    ) -> None:
-        """Clones `repo` at its commit_SHA into the empty `destination` directory."""
+    def get_dir(self, repo: RepoRef) -> Path:
+        """Returns the location for the repo's commit, whether or not it exists."""
+
+        ...
+
+    def create_dir(self, repo: RepoRef, override: bool = True) -> None:
+        """Creates an empty location for the repo's commit."""
+
+        ...
+
+    def prune_dir(self, repo: RepoRef) -> None:
+        """Removes the repo's location if it exists."""
+
+        ...
+
+
+# MARK: RepoStore
+class RepoStore(Protocol):
+    """Writes repository checkouts to storage and removes them."""
+
+    def write(self, repo: RepoRef, include_dirs: list[str] | None = None) -> None:
+        """Writes a checkout of `repo` at its commit_SHA to storage."""
+
+        ...
+
+    def delete(self, repo: RepoRef) -> None:
+        """Removes the checkout of `repo` from storage."""
+
+        ...
+
+    def get_location(self, repo: RepoRef) -> Path:
+        """Returns where the checkout of `repo` lives in storage."""
 
         ...
 
 
 # MARK: RepoWriter
 class RepoWriter:
-    """Writes a pruned, sandboxed checkout of a repository commit to disk using the git CLI."""
+    """Writes shallow, sandboxed checkouts of repository commits into storage provided by a RepoIOManager."""
 
-    def __init__(self, timeout_seconds: int = CLONE_TIMEOUT_SECONDS) -> None:
+    def __init__(
+        self, io_manager: RepoIOManager, timeout_seconds: int = CLONE_TIMEOUT_SECONDS
+    ) -> None:
+        self._io_manager: RepoIOManager = io_manager
         self._timeout_seconds: int = timeout_seconds
 
-    # MARK: clone
-    def clone(
-        self, repo: RepoRef, destination: Path, include_dirs: list[str] | None = None
-    ) -> None:
-        """Clones `repo` at its commit_SHA into the empty `destination` directory.
-        Only the single commit is fetched, file contents download only for `include_dirs` (plus root files) when given.
+    # MARK: write
+    def write(self, repo: RepoRef, include_dirs: list[str] | None = None) -> None:
+        """Clones `repo` at its commit_SHA into a fresh location, replacing any previous checkout.
+        Only the single commit is fetched; file contents download only for `include_dirs` (plus root files) when given.
         """
 
-        self._validate(repo, destination, include_dirs)
+        self._validate(repo, include_dirs)
 
+        # NOTE: A possible seperation of responsibilities issue here
+        # the ioManager should probably be responsible for creating the directory, not the writer.
+        self._io_manager.create_dir(repo)
+        destination: Path = self._io_manager.get_dir(repo)
+
+        try:
+            self._clone(repo, destination, include_dirs)
+        except CloneError:
+            self._io_manager.prune_dir(repo)
+            raise
+
+    # MARK: delete
+    def delete(self, repo: RepoRef) -> None:
+        """Removes the checkout of `repo`. Does nothing if it was never written."""
+
+        self._io_manager.prune_dir(repo)
+
+    # MARK: get_location
+    def get_location(self, repo: RepoRef) -> Path:
+        """Returns where the checkout of `repo` lives, whether or not it has been written."""
+
+        return self._io_manager.get_dir(repo)
+
+    def _clone(
+        self, repo: RepoRef, destination: Path, include_dirs: list[str] | None
+    ) -> None:
         self._run_git(["init", "--quiet", str(destination)])
         self._run_git_in(
             destination,
@@ -93,29 +144,23 @@ class RepoWriter:
                 "--filter=blob:none",
                 "--no-tags",
                 REMOTE_NAME,
-                repo.commit_SHA,
+                str(repo.commit_SHA),
             ],
         )
         self._run_git_in(destination, ["checkout", "--quiet", "FETCH_HEAD"])
 
     @staticmethod
-    def _validate(
-        repo: RepoRef, destination: Path, include_dirs: list[str] | None
-    ) -> None:
-
+    def _validate(repo: RepoRef, include_dirs: list[str] | None) -> None:
         if not FULL_NAME_PATTERN.fullmatch(repo.full_name):
             raise ValueError(f"Invalid repository name: {repo.full_name!r}.")
 
         if repo.commit_SHA is None:
-            raise ValueError(f"{repo.full_name} has no commit_SHA; resolve it before cloning.")
+            raise ValueError(
+                f"{repo.full_name} has no commit_SHA; resolve it before cloning."
+            )
 
         if not COMMIT_SHA_PATTERN.fullmatch(repo.commit_SHA):
             raise ValueError(f"Invalid commit SHA: {repo.commit_SHA!r}.")
-
-        if not destination.is_dir() or any(destination.iterdir()):
-            raise ValueError(
-                f"Destination must be an existing, empty directory: {destination}."
-            )
 
         for include_dir in include_dirs or []:
             include_path: PurePosixPath = PurePosixPath(include_dir)

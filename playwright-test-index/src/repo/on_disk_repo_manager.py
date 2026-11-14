@@ -2,7 +2,6 @@ import shutil
 from pathlib import Path
 
 from models.repo_ref import RepoRef
-
 from repo.repo_writer import COMMIT_SHA_PATTERN
 
 DEFAULT_REPO_PATH: Path = Path(
