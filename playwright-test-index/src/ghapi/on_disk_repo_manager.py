@@ -1,13 +1,7 @@
 import shutil
 from pathlib import Path
 
-from models.repo_ref import RepoRef
-
-from repo.repo_writer import COMMIT_SHA_PATTERN
-
-DEFAULT_REPO_PATH: Path = Path(
-    "/Users/brianmasse/Developer/school/salad-lab/playright-test-index/tmp/data"
-)
+from models.repo_ref import COMMIT_SHA_PATTERN, RepoRef
 
 
 # MARK: WorkspaceError
@@ -17,20 +11,20 @@ class WorkspaceError(Exception):
 
 # MARK: OnDiskRepoManager
 class OnDiskRepoManager:
-    """Owns a workspace directory holding one checkout directory per commit SHA."""
+    """Owns a local workspace directory holding one checkout directory per commit SHA."""
 
-    def __init__(self, repo_path: Path = DEFAULT_REPO_PATH) -> None:
-        self._workspace_path: Path = repo_path
+    def __init__(self, workspace_path: Path) -> None:
+        self._workspace_path: Path = workspace_path
 
     # MARK: initialize_workspace
     def initialize_workspace(self) -> None:
-        """Create the workspace directory at path, reusing it if it already exists."""
+        """Creates the workspace directory, reusing it if it already exists."""
 
         self._workspace_path.mkdir(parents=True, exist_ok=True)
 
     # MARK: deinitialize_workspace
     def deinitialize_workspace(self) -> None:
-        """Delete the workspace created by the manager."""
+        """Deletes the workspace, refusing if it holds anything other than commit directories."""
 
         self._require_workspace()
 
@@ -46,20 +40,26 @@ class OnDiskRepoManager:
 
         shutil.rmtree(self._workspace_path)
 
-    def _get_dir(self, repo: RepoRef) -> Path:
+    # MARK: get_dir
+    def get_dir(self, repo: RepoRef) -> Path:
         """Returns the checkout directory path for the repo's commit, whether or not it exists."""
 
+        if repo.commit_SHA is None:
+            raise ValueError(f"{repo.full_name} has no commit_SHA; resolve it first.")
         if not COMMIT_SHA_PATTERN.fullmatch(repo.commit_SHA):
             raise ValueError(f"Invalid commit SHA: {repo.commit_SHA!r}.")
 
         return self._workspace_path / repo.commit_SHA
 
-    # MARK: request_new_dir
-    def request_new_dir(self, repo: RepoRef, override: bool = True) -> Path:
-        """Create an empty directory keyed by the repo's SHA and return its path. Only override pre-existing dirs if override = True, otherwise raise error"""
+    # MARK: create_dir
+    def create_dir(self, repo: RepoRef, override: bool = True) -> None:
+        """Creates an empty directory keyed by the repo's commit SHA, creating the workspace if needed.
+        An existing directory is replaced when `override` is True, otherwise FileExistsError is raised.
+        """
 
+        self.initialize_workspace()
         self._require_workspace()
-        commit_dir: Path = self._get_dir(repo)
+        commit_dir: Path = self.get_dir(repo)
 
         if commit_dir.exists():
             if not override:
@@ -70,13 +70,11 @@ class OnDiskRepoManager:
 
         commit_dir.mkdir()
 
-        return commit_dir
-
     # MARK: prune_dir
     def prune_dir(self, repo: RepoRef) -> None:
-        """Delete the directory associated with the repo. Does nothing if it does not exist."""
+        """Deletes the directory associated with the repo. Does nothing if it does not exist."""
 
-        commit_dir: Path = self._get_dir(repo)
+        commit_dir: Path = self.get_dir(repo)
 
         if commit_dir.exists():
             self._remove_commit_dir(commit_dir)

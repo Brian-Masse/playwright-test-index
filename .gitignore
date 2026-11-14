@@ -2,3 +2,7 @@
 **/__pycache__/tmp/
 tmp/**
 tmp/
+
+data/*.db
+
+.python-version

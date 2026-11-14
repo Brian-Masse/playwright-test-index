@@ -1,20 +1,25 @@
 import re
 import warnings
 from collections.abc import Iterator
+from dataclasses import replace
 from itertools import islice
 from types import TracebackType
 from typing import Protocol, Self
 
 from github import Auth, BadCredentialsException, Github, UnknownObjectException
+from github.Commit import Commit
 from github.GitTree import GitTree
 from github.Repository import Repository
-from models.language import Language
-from models.repo_ref import RepoRef
+from models.repo_ref import FULL_NAME_PATTERN, RepoRef
+from models.repo_search_query import RepoSearchQuery
 from models.repo_tree import RepoTree
 
 MAX_SEARCH_RESULTS: int = 1000
 BLOB_TYPE: str = "blob"
 TREE_TYPE: str = "tree"
+LATEST_COMMIT_REF: str = "HEAD"
+GITHUB_URL_PREFIX: str = "https://github.com/"
+GIT_URL_SUFFIX: str = ".git"
 
 
 # MARK: GitHubAuthenticationError
@@ -47,8 +52,35 @@ class RepoFileAccess(Protocol):
         ...
 
 
+# MARK: RepoLookup
+class RepoLookup(Protocol):
+    """Finds a single repository and pins it to a commit."""
+
+    def get_repo_from_url(self, url: str) -> RepoRef:
+        """Fetches the repo at a GitHub URL."""
+
+        ...
+
+    def resolve_commit(self, repo: RepoRef) -> RepoRef:
+        """Returns a copy of `repo` pinned to the latest commit SHA on its default branch."""
+
+        ...
+
+
+# MARK: RepoSearch
+class RepoSearch(Protocol):
+    """Executes repository search queries."""
+
+    def search_repos(self, query: RepoSearchQuery) -> list[RepoRef]:
+        """Returns the repos matching `query`, sorted by stars descending."""
+
+        ...
+
+
 # MARK: GitHubGateway
 class GitHubGateway:
+    """Talks to GitHub with a Personal Access Token and converts its objects into domain models."""
+
     def __init__(self, client: Github) -> None:
         self._client: Github = client
         self._lazy_client: Github = client.withLazy(True)
@@ -89,21 +121,38 @@ class GitHubGateway:
         self._lazy_client.close()
         self._client.close()
 
-    # MARK: build_query
-    def _build_query(
-        self, keywords: list[str], language: Language | None, min_stars: int | None
-    ) -> str:
+    # MARK: search_repos
+    def search_repos(self, query: RepoSearchQuery) -> list[RepoRef]:
+        """Returns the repos matching `query`, sorted by stars descending."""
+
+        if not 0 < query.limit <= MAX_SEARCH_RESULTS:
+            raise ValueError(
+                f"limit must be between 1 and {MAX_SEARCH_RESULTS}, got {query.limit}."
+            )
+
+        results: Iterator[Repository] = iter(
+            self._client.search_repositories(
+                query=self._build_query(query), sort="stars", order="desc"
+            )
+        )
+
+        return [
+            self._to_repo_ref(repository) for repository in islice(results, query.limit)
+        ]
+
+    @staticmethod
+    def _build_query(query: RepoSearchQuery) -> str:
         """Builds a GitHub search query string, raising ValueError on malformed input."""
 
         cleaned_keywords: list[str] = [
-            keyword.strip() for keyword in keywords if keyword.strip()
+            keyword.strip() for keyword in query.keywords if keyword.strip()
         ]
 
-        if len(cleaned_keywords) != len(keywords):
+        if len(cleaned_keywords) != len(query.keywords):
             raise ValueError("Keywords must be non-empty strings.")
-        if min_stars is not None and min_stars < 0:
-            raise ValueError(f"min_stars must be non-negative, got {min_stars}.")
-        if not cleaned_keywords and language is None and min_stars is None:
+        if query.min_stars is not None and query.min_stars < 0:
+            raise ValueError(f"min_stars must be non-negative, got {query.min_stars}.")
+        if not cleaned_keywords and query.language is None and query.min_stars is None:
             raise ValueError(
                 "Query needs at least one keyword, language, or min_stars."
             )
@@ -112,34 +161,18 @@ class GitHubGateway:
             f'"{keyword}"' if " " in keyword else keyword
             for keyword in cleaned_keywords
         ]
-        if language is not None:
-            terms.append(f"language:{language.value}")
-        if min_stars is not None:
-            terms.append(f"stars:>={min_stars}")
+        if query.language is not None:
+            terms.append(f"language:{query.language.value}")
+        if query.min_stars is not None:
+            terms.append(f"stars:>={query.min_stars}")
 
         return " ".join(terms)
 
-    # MARK: get_repos
-    def get_repos(
-        self,
-        keywords: list[str] | None = None,
-        language: Language | None = None,
-        min_stars: int | None = None,
-        limit: int = 100,
-    ) -> list[RepoRef]:
-        """Searches for repos matching the parameters, sorted by stars descending."""
+    # MARK: get_repo_from_url
+    def get_repo_from_url(self, url: str) -> RepoRef:
+        """Fetches the repo at a URL like https://github.com/owner/name, raising ValueError on non-GitHub URLs."""
 
-        if not 0 < limit <= MAX_SEARCH_RESULTS:
-            raise ValueError(
-                f"limit must be between 1 and {MAX_SEARCH_RESULTS}, got {limit}."
-            )
-
-        query: str = self._build_query(keywords or [], language, min_stars)
-        results: Iterator[Repository] = iter(
-            self._client.search_repositories(query=query, sort="stars", order="desc")
-        )
-
-        return [self._to_repo_ref(repository) for repository in islice(results, limit)]
+        return self.get_repo(self._to_full_name(url))
 
     # MARK: get_repo
     def get_repo(self, repo_name: str) -> RepoRef:
@@ -152,6 +185,21 @@ class GitHubGateway:
 
         return self._to_repo_ref(repository)
 
+    # MARK: resolve_commit
+    def resolve_commit(self, repo: RepoRef) -> RepoRef:
+        """Returns a copy of `repo` pinned to the latest commit SHA on its default branch."""
+
+        commit: Commit = self._lazy_client.get_repo(repo.full_name).get_commit(
+            LATEST_COMMIT_REF
+        )
+
+        try:
+            commit.update()
+        except UnknownObjectException as error:
+            raise LookupError(f"{repo.full_name} not found on GitHub.") from error
+
+        return replace(repo, commit_SHA=commit.sha)
+
     # MARK: read_file_from_repo
     def read_file_from_repo(self, repo: RepoRef, path: str) -> str:
         """Returns the decoded text content of a file, raising FileNotFoundError if it is absent."""
@@ -162,7 +210,7 @@ class GitHubGateway:
 
         repository: Repository = self._lazy_client.get_repo(repo.full_name)
         content: bytes = repository.get_contents(
-            normalized_path, ref=repo.commit_SHA
+            normalized_path, ref=self._ref(repo)
         ).decoded_content
 
         return content.decode("utf-8", errors="replace")
@@ -199,9 +247,7 @@ class GitHubGateway:
 
     def _fetch_tree(self, repo: RepoRef) -> RepoTree:
         repository: Repository = self._lazy_client.get_repo(repo.full_name)
-        git_tree: GitTree = repository.get_git_tree(
-            sha=repo.commit_SHA, recursive=True
-        )
+        git_tree: GitTree = repository.get_git_tree(sha=self._ref(repo), recursive=True)
 
         if git_tree.truncated:
             warnings.warn(
@@ -218,18 +264,31 @@ class GitHubGateway:
         )
 
     @staticmethod
+    def _ref(repo: RepoRef) -> str:
+        return repo.commit_SHA or LATEST_COMMIT_REF
+
+    @staticmethod
+    def _to_full_name(url: str) -> str:
+        if not url.startswith(GITHUB_URL_PREFIX):
+            raise ValueError(f"Not a GitHub repository URL: {url!r}.")
+
+        full_name: str = (
+            url.removeprefix(GITHUB_URL_PREFIX).rstrip("/").removesuffix(GIT_URL_SUFFIX)
+        )
+        if not FULL_NAME_PATTERN.fullmatch(full_name):
+            raise ValueError(f"Not a GitHub repository URL: {url!r}.")
+
+        return full_name
+
+    @staticmethod
     def _normalize_path(path: str) -> str:
         return path.strip("/")
 
     @staticmethod
     def _to_repo_ref(repository: Repository) -> RepoRef:
-        latest_commit_sha: str = repository.get_branch(
-            repository.default_branch
-        ).commit.sha
-
         return RepoRef(
             full_name=repository.full_name,
-            commit_SHA=latest_commit_sha,
+            commit_SHA=None,
             repo_size=repository.size,
             stars=repository.stargazers_count,
             language=repository.language,
