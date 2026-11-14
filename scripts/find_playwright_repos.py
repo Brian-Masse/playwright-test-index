@@ -24,7 +24,7 @@ def find(query: RepoSearchQuery) -> None:
             checks=[
                 reader.has_playwright_config,
                 # reader.has_playwright_dependency_in_any_language,
-                reader.has_root_test_dir,
+                # reader.has_root_test_dir,
             ],
         )
         repos: list[RepoRef] = pipeline.find(query)
