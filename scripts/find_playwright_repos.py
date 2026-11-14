@@ -20,7 +20,12 @@ def find(query: RepoSearchQuery) -> None:
     with GitHubGateway.from_token(os.environ[TOKEN_ENV_VAR]) as gateway:
         reader: RepoReader = RepoReader(gateway)
         pipeline: FindPlaywrightReposPipeline = FindPlaywrightReposPipeline(
-            search=gateway, checks=[reader.has_playwright_config]
+            search=gateway,
+            checks=[
+                reader.has_playwright_config,
+                # reader.has_playwright_dependency_in_any_language,
+                reader.has_root_test_dir,
+            ],
         )
         repos: list[RepoRef] = pipeline.find(query)
 
@@ -35,12 +40,26 @@ def main() -> None:
     """Searches GitHub for repositories that use Playwright."""
 
     parser: argparse.ArgumentParser = argparse.ArgumentParser(description=main.__doc__)
-    parser.add_argument("keywords", nargs="*", default=DEFAULT_KEYWORDS, help="Search keywords")
-    parser.add_argument("--language", choices=[language.value for language in Language], help="Primary repo language")
+    parser.add_argument(
+        "keywords", nargs="*", default=DEFAULT_KEYWORDS, help="Search keywords"
+    )
+    parser.add_argument(
+        "--language",
+        choices=[language.value for language in Language],
+        help="Primary repo language",
+    )
     parser.add_argument("--min-stars", type=int, help="Minimum star count")
-    parser.add_argument("--limit", type=int, default=DEFAULT_LIMIT, help="How many search results to check")
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=DEFAULT_LIMIT,
+        help="How many search results to check",
+    )
 
     arguments: argparse.Namespace = parser.parse_args()
+
+    print("Starting Search.")
+
     find(
         RepoSearchQuery(
             keywords=tuple(arguments.keywords),

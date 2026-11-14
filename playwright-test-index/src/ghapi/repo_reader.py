@@ -64,6 +64,22 @@ class RepoReader:
 
         return detector.has_playwright_dependency(repo)
 
+    # MARK: has_playwright_dependency_in_any_language
+    def has_playwright_dependency_in_any_language(self, repo: RepoRef) -> bool:
+        """Checks whether the package manifests of any supported Language declare a Playwright package."""
+
+        # Languages sharing a package manager (TypeScript, JavaScript) map to the same detector
+        # type, so dedupe to avoid re-reading the same manifests.
+        detectors_by_type: dict[type, DependencyDetector] = {}
+        for language in Language:
+            detector: DependencyDetector = detector_for(language, self._file_access)
+            detectors_by_type.setdefault(type(detector), detector)
+
+        return any(
+            detector.has_playwright_dependency(repo)
+            for detector in detectors_by_type.values()
+        )
+
     def _any_file_mentions_playwright(self, repo: RepoRef, paths: list[str]) -> bool:
         return any(
             PLAYWRIGHT_KEYWORD
