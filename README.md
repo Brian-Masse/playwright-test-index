@@ -58,6 +58,25 @@ Pins the repo to the latest commit on its default branch and clones it into `tmp
 > - The clone is shallow (one commit) and sandboxed: no hooks, no submodules, no global git config, symlinks disabled.
 > - Re-cloning the same commit replaces the existing checkout.
 
+### Save Observations to local database
+
+#### Seed the DB
+
+```sh
+uv run scripts/seed_db.py \
+    [--template data/seed_template.json] \
+    [--db data/dataset.db]
+```
+
+#### Save observation
+
+```sh
+uv run scripts/store_analysis.py <annotations.json> \
+    [--db data/dataset.db]
+```
+
+Writes one repo's analyzed tests and any new properties into the database.
+
 ## Project Structure
 
 ```
